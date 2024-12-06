@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 
 //Middleware 
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173'],
+    credentials: true
+}));
 app.use(express.json());
 
 
@@ -29,6 +33,19 @@ async function run() {
         const database = client.db('carDoctor');
         const services = database.collection('services');
         const bookings = database.collection('bookings')
+
+        app.post('/jwt', async(req, res) => {
+            const userEmail = req.body;
+            const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN, {expiresIn: '1h'});
+            res.cookie('token', token, {
+                httpOnly:true,
+                secure: false,
+                maxAge: 360000,
+                path:'/',
+                sameSite: 'none'
+            })
+            res.send(token)
+        })
 
         app.get('/services', async (req, res) => {
             const cursor = services.find();
