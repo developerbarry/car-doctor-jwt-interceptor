@@ -34,18 +34,21 @@ async function run() {
         const services = database.collection('services');
         const bookings = database.collection('bookings')
 
-        app.post('/jwt', async(req, res) => {
+ 
+
+        app.post('/userLoggedOut', async (req, res) => {
             const userEmail = req.body;
-            const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN, {expiresIn: '1h'});
-            res.cookie('token', token, {
-                httpOnly:true,
-                secure: false,
-                maxAge: 360000,
-                path:'/',
-                sameSite: 'none'
+            res.clearCookie("token", {
+                path: '/',          // Make sure path matches the one set earlier
+                sameSite: 'None',   // SameSite should match the original setting
+                secure: true,
+                maxAge: 0
             })
-            res.send(token)
+            res.send({ success: true })
         })
+
+
+
 
         app.get('/services', async (req, res) => {
             const cursor = services.find();
