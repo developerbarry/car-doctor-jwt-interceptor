@@ -34,7 +34,18 @@ async function run() {
         const services = database.collection('services');
         const bookings = database.collection('bookings')
 
- 
+        app.post('/jwt', async (req, res) => {
+            const userEmail = req.body;
+            const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: true, // For production it true, || if we used false and sameSite none then it dosn't save to the browser. So for it we have to used true
+                maxAge: 360000,
+                path: '/',
+                sameSite: 'none'
+            })
+            res.send(token)
+        })
 
         app.post('/userLoggedOut', async (req, res) => {
             const userEmail = req.body;
