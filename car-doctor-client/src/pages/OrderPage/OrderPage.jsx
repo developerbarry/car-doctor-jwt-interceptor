@@ -9,13 +9,15 @@ const OrderPage = () => {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch(`https://car-doctor-server-iota-silk.vercel.app/bookings?email=${user?.email}`)
+        fetch(`http://localhost:5000/bookings?email=${user?.email}`, {
+            credentials: 'include'
+        })
             .then(res => res.json())
             .then(data => setOrders(data))
     }, [user?.email])
 
     const handleDeleteOrder = (id) => {
-        fetch(`https://car-doctor-server-iota-silk.vercel.app/bookings/${id}`, {
+        fetch(`http://localhost:5000/bookings/${id}`, {
             method: "DELETE"
         })
             .then(res => res.json())
@@ -30,7 +32,7 @@ const OrderPage = () => {
     }
 
     const handleOrderConfirm = (id) => {
-        fetch(`https://car-doctor-server-iota-silk.vercel.app/bookings/${id}`, {
+        fetch(`http://localhost:5000/bookings/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"

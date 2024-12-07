@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const jwt = require('jsonwebtoken');
+let cookieParser = require('cookie-parser');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
@@ -12,6 +13,8 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser())
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.iam7h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -24,6 +27,26 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+
+
+//Verify Middleware
+const verifyToken = async (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).send({ message: "Unauthorize Access" });
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, (error, decoded) => {
+        if (error) {
+            return res.status(401).send({ message: 'Unauthorize Access' });
+        }
+
+        res.user = decoded;
+        next()
+    })
+}
+
+
 
 async function run() {
     try {
@@ -80,7 +103,12 @@ async function run() {
 
         //Bookings
 
-        app.get('/bookings', async (req, res) => {
+        app.get('/bookings', verifyToken, async (req, res) => {
+
+            if (req.query?.email !== res.user.email) {
+                return res.status(403).send({ message: "Forbidden" })
+            }
+
             let query = {};
             if (req.query?.email) {
                 query = { email: req.query.email }

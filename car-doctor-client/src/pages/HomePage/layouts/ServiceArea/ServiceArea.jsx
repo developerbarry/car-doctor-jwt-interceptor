@@ -9,7 +9,7 @@ const ServiceArea = () => {
 
     useEffect(() => {
         setIsLoading(true)
-        fetch('https://car-doctor-server-iota-silk.vercel.app/services')
+        fetch('http://localhost:5000/services')
             .then(res => res.json())
             .then(data => {
                 setServices(data);
