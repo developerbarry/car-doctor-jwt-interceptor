@@ -3,18 +3,34 @@ import { AuthContext } from "../../AuthProvider/AuthProvider";
 import OrderTableRow from "./OrderTableRow";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import useSecureAxios from "../../useAxiosSecure/useSecureAxios";
+
 
 const OrderPage = () => {
     const { user } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
+    const secure = useSecureAxios();
+    
 
     useEffect(() => {
-        fetch(`http://localhost:5000/bookings?email=${user?.email}`, {
-            credentials: 'include'
-        })
-            .then(res => res.json())
-            .then(data => setOrders(data))
-    }, [user?.email])
+        // fetch(`http://localhost:5000/bookings?email=${user?.email}`, {
+        //     credentials: 'include'
+        // })
+        //     .then(res => res.json())
+        //     .then(data => setOrders(data))
+
+        secure(`/bookings?email=${user?.email}`)
+            .then(res => {
+                setOrders(res.data)
+            })
+            .catch(error => {
+                const err = error.message;
+                console.log(err)
+            })
+
+    }, [user?.email, secure])
+
+
 
     const handleDeleteOrder = (id) => {
         fetch(`http://localhost:5000/bookings/${id}`, {
