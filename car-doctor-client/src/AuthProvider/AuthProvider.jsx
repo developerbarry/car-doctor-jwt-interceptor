@@ -43,7 +43,7 @@ const AuthProvider = ({ children }) => {
                     .catch(error => {
                         console.log(error)
                     })
-            } 
+            }
             else {
                 axios.post('http://localhost:5000/userLoggedOut', userEmail, {
                     withCredentials: true
@@ -57,7 +57,7 @@ const AuthProvider = ({ children }) => {
         })
 
         return () => {
-            return unSubscrbe()
+            unSubscrbe()
         }
     }, [user?.email])
 

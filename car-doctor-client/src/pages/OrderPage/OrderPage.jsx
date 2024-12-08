@@ -19,6 +19,7 @@ const OrderPage = () => {
         //     .then(res => res.json())
         //     .then(data => setOrders(data))
 
+        
         secure(`/bookings?email=${user?.email}`)
             .then(res => {
                 setOrders(res.data)
